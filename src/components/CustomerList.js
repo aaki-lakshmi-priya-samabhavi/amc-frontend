@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -6,7 +7,7 @@ const CustomerList = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await fetch("/api/customers");
+        const response = await fetch("http://localhost:5000/api/customers");
         const data = await response.json();
         setCustomers(data);
       } catch (error) {
@@ -18,19 +19,35 @@ const CustomerList = () => {
   }, []);
 
   return (
-    <div style={{ padding: "1rem" }}>
-      {customers.length > 0 ? (
-        customers.map((customer) => (
-          <div key={customer._id} style={{ border: "3px solid black", marginBottom: "10px", padding: "10px" }}>
-            <p><strong>Name of the person:</strong> {customer.name}</p>
-            <p><strong>Contact:</strong> {customer.contact}</p>
-            <p><strong>AMC Start:</strong> {new Date(customer.amcStartDate).toLocaleDateString()}</p>
-            <p><strong>AMC End:</strong> {new Date(customer.amcEndDate).toLocaleDateString()}</p>
+    <div className="min-h-screen bg-blue-50 p-6 relative">
+      <h1 className="text-4xl text-blue-700 font-bold underline text-center my-8 animate-pulse">
+        AMC Scheduler
+      </h1>
+
+      <h2 className="text-2xl text-blue-500 font-semibold text-center mb-6">
+        All Customers
+      </h2>
+
+      <div className="space-y-4 px-4">
+        {customers.map((customer, index) => (
+          <div key={index} className="border-2 border-blue-300 rounded-xl p-4 bg-white shadow-md transition-all hover:scale-105 duration-300">
+            <p><strong className="text-blue-700">Name of the person:</strong> {customer.name}</p>
+            <p><strong className="text-blue-600">Contact:</strong> {customer.contact}</p>
+            <p><strong className="text-blue-600">AMC Start:</strong> {customer.amcStartDate}</p>
+            <p><strong className="text-blue-600">AMC End:</strong> {customer.amcEndDate}</p>
           </div>
-        ))
-      ) : (
-        <p>Loading customers...just wait</p>
-      )}
+        ))}
+      </div>
+
+      {/* Add Customer Button */}
+      <div className="fixed bottom-6 right-6">
+        <Link
+          to="/add-customer"
+          className="bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300"
+        >
+          ➕ Add New Customer
+        </Link>
+      </div>
     </div>
   );
 };

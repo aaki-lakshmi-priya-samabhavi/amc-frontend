@@ -1,14 +1,18 @@
 import React from "react";
-import CustomerList from "./components/CustomerList"; // only if inside components
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import CustomerList from "./components/CustomerList";
+import AddCustomer from "./components/AddCustomer";
+import './index.css';
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <h1>AMC Scheduler</h1>
-      <h2>All Customers</h2>
-      <CustomerList />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<CustomerList />} />
+        <Route path="/add-customer" element={<AddCustomer />} />
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
