@@ -1,3 +1,5 @@
+// src/components/CustomerList.js
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -7,7 +9,7 @@ const CustomerList = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/customers");
+        const response = await fetch('/api/customers');
         const data = await response.json();
         setCustomers(data);
       } catch (error) {
@@ -29,23 +31,27 @@ const CustomerList = () => {
       </h2>
 
       <div className="space-y-4 px-4">
-        {customers.map((customer, index) => (
-          <div key={index} className="border-2 border-blue-300 rounded-xl p-4 bg-white shadow-md transition-all hover:scale-105 duration-300">
-            <p><strong className="text-blue-700">Name of the person:</strong> {customer.name}</p>
-            <p><strong className="text-blue-600">Contact:</strong> {customer.contact}</p>
-            <p><strong className="text-blue-600">AMC Start:</strong> {customer.amcStartDate}</p>
-            <p><strong className="text-blue-600">AMC End:</strong> {customer.amcEndDate}</p>
-          </div>
-        ))}
+        {customers.length === 0 ? (
+          <p className="text-center text-gray-500">No customers found.</p>
+        ) : (
+          customers.map((customer, index) => (
+            <div key={index} className="border-2 border-blue-300 rounded-xl p-4 bg-white shadow-md transition-all hover:scale-105 duration-300">
+              <p><strong className="text-blue-700">Name:</strong> {customer.name}</p>
+              <p><strong className="text-blue-600">Contact:</strong> {customer.contact}</p>
+              <p><strong className="text-blue-600">AMC Start:</strong> {customer.amcStartDate}</p>
+              <p><strong className="text-blue-600">AMC End:</strong> {customer.amcEndDate}</p>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Add Customer Button */}
+      {/* Floating Button */}
       <div className="fixed bottom-6 right-6">
         <Link
           to="/add-customer"
           className="bg-blue-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300"
         >
-          ➕ Add New Customer
+          <span className="mr-2">➕</span> Add New Customer
         </Link>
       </div>
     </div>
