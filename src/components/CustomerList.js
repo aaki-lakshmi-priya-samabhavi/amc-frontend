@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
@@ -19,6 +21,19 @@ const CustomerList = () => {
 
     fetchCustomers();
   }, []);
+
+  // Inside CustomerList.js
+
+  // 2. DELETE function here 👇
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/customers/${id}`);
+      setCustomers(customers.filter(c => c._id !== id));
+    } catch (err) {
+      console.error("❌ Delete failed:", err);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-blue-50 p-6 relative">
@@ -55,6 +70,8 @@ const CustomerList = () => {
         </Link>
       </div>
     </div>
+
+
   );
 };
 
