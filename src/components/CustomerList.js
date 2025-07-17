@@ -23,13 +23,17 @@ const CustomerList = () => {
 
   // ✅ 1. DELETE function
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/customers/${id}`);
-      setCustomers(customers.filter(c => c._id !== id));
-    } catch (err) {
-      console.error("❌ Delete failed:", err);
+    if (window.confirm("Are you sure you want to delete this customer?")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/customers/${id}`);
+        setCustomers((prev) => prev.filter((customer) => customer._id !== id));
+      } catch (error) {
+        console.error("Delete error:", error);  // Add this line
+        alert("Failed to delete customer");
+      }
     }
   };
+
 
   // ✅ 2. Confirm delete before calling it
   const confirmDelete = (id) => {
@@ -68,6 +72,13 @@ const CustomerList = () => {
               >
                 🗑 Delete
               </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-1 rounded-md mr-2"
+                onClick={() => handleEdit(customer)}
+              >
+                ✏️ Edit
+              </button>
+
             </div>
           ))
         )}
