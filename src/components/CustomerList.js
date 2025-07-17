@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
 
@@ -22,9 +21,7 @@ const CustomerList = () => {
     fetchCustomers();
   }, []);
 
-  // Inside CustomerList.js
-
-  // 2. DELETE function here 👇
+  // ✅ 1. DELETE function
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/customers/${id}`);
@@ -34,6 +31,12 @@ const CustomerList = () => {
     }
   };
 
+  // ✅ 2. Confirm delete before calling it
+  const confirmDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this customer?")) {
+      handleDelete(id);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-blue-50 p-6 relative">
@@ -50,17 +53,27 @@ const CustomerList = () => {
           <p className="text-center text-gray-500">No customers found.</p>
         ) : (
           customers.map((customer, index) => (
-            <div key={index} className="border-2 border-blue-300 rounded-xl p-4 bg-white shadow-md transition-all hover:scale-105 duration-300">
+            <div
+              key={index}
+              className="border-2 border-blue-300 rounded-xl p-4 bg-white shadow-md transition-all hover:scale-105 duration-300"
+            >
               <p><strong className="text-blue-700">Name:</strong> {customer.name}</p>
               <p><strong className="text-blue-600">Contact:</strong> {customer.contact}</p>
               <p><strong className="text-blue-600">AMC Start:</strong> {customer.amcStartDate}</p>
               <p><strong className="text-blue-600">AMC End:</strong> {customer.amcEndDate}</p>
+
+              <button
+                onClick={() => confirmDelete(customer._id)}
+                className="mt-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+              >
+                🗑 Delete
+              </button>
             </div>
           ))
         )}
       </div>
 
-      {/* Floating Button */}
+      {/* Floating Add Button */}
       <div className="fixed bottom-6 right-6">
         <Link
           to="/add-customer"
@@ -70,8 +83,6 @@ const CustomerList = () => {
         </Link>
       </div>
     </div>
-
-
   );
 };
 
