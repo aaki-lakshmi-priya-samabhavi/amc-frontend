@@ -44,12 +44,13 @@ const CustomerList = () => {
 
   return (
     <div className="min-h-screen bg-blue-50 p-6 relative">
-      <h1 className="text-4xl text-blue-700 font-bold underline text-center my-8 animate-pulse">
-        AMC Scheduler
+      <h1 className="text-5xl text-black-800 font-[Georgia] bold text-center my-10 tracking-wide font-serif">
+        ⭐ <span className="mx-4 font-[cursive]">AMC Scheduler</span> ⭐
       </h1>
 
-      <h2 className="text-2xl text-blue-500 font-semibold text-center mb-6">
-        All Customers
+
+      <h2 className="text-2xl text-black-800 font-[Georgia] bold text-center mb-6 font-serif">
+        Sri Durga Elevators
       </h2>
 
       <div className="space-y-4 px-4">
@@ -68,18 +69,19 @@ const CustomerList = () => {
 
               <button
                 onClick={() => confirmDelete(customer._id)}
-                className="mt-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                className="mt-2 bg-red-400 hover:bg-red-600 text-white px-3 py-1 rounded"
               >
                 🗑 Delete
               </button>
-              <button
-                className="bg-blue-500 text-white px-4 py-1 rounded-md mr-2"
-                onClick={() => handleEdit(customer)}
-              >
-                ✏️ Edit
-              </button>
+              <Link to={`/edit-customer/${customer._id}`}>
+                <button className="bg-blue-500 text-white px-4 py-1 rounded-md mr-8 ml-2">
+                  ✏️ Edit
+                </button>
+              </Link>
+
 
             </div>
+
           ))
         )}
       </div>
