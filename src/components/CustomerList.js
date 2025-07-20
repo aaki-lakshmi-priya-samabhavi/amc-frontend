@@ -37,7 +37,7 @@ const CustomerList = () => {
 
   // ✅ 2. Confirm delete before calling it
   const confirmDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
+    if (window.confirm("Are you sure you want to delete this customer? if yes click ok")) {
       handleDelete(id);
     }
   };

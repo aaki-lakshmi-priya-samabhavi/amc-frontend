@@ -34,7 +34,7 @@ const EditCustomer = () => {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:5000/api/customers/${id}`, customer);
-      alert("✅ Customer updated successfully!");
+      alert("✅ Customer updated successfully! take a look");
       navigate('/');
     } catch (err) {
       console.error("❌ Error updating customer:", err);
