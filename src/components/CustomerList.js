@@ -6,6 +6,7 @@ import axios from 'axios';
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(''); // ✅ search state
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -21,26 +22,28 @@ const CustomerList = () => {
     fetchCustomers();
   }, []);
 
-  // ✅ 1. DELETE function
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this customer?")) {
       try {
         await axios.delete(`http://localhost:5000/api/customers/${id}`);
         setCustomers((prev) => prev.filter((customer) => customer._id !== id));
       } catch (error) {
-        console.error("Delete error:", error);  // Add this line
+        console.error("Delete error:", error);
         alert("Failed to delete customer");
       }
     }
   };
 
-
-  // ✅ 2. Confirm delete before calling it
   const confirmDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this customer? if yes click ok")) {
       handleDelete(id);
     }
   };
+
+  // ✅ Filter customers based on search
+  const filteredCustomers = customers.filter((customer) =>
+    customer.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-blue-50 p-6 relative">
@@ -48,16 +51,26 @@ const CustomerList = () => {
         ⭐ <span className="mx-4 font-[cursive]">AMC Scheduler</span> ⭐
       </h1>
 
-
       <h2 className="text-2xl text-black-800 font-[Georgia] bold text-center mb-6 font-serif">
         Sri Durga Elevators
       </h2>
 
+      {/* ✅ Search input box */}
+      <div className="flex justify-center mb-6">
+        <input
+          type="text"
+          placeholder="Search by name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border p-2 rounded w-full max-w-md"
+        />
+      </div>
+
       <div className="space-y-4 px-4">
-        {customers.length === 0 ? (
-          <p className="text-center text-gray-500">No customers found.</p>
+        {filteredCustomers.length === 0 ? (
+          <p className="text-center text-gray-500">No matching customers found.</p>
         ) : (
-          customers.map((customer, index) => (
+          filteredCustomers.map((customer, index) => (
             <div
               key={index}
               className="border-2 border-blue-300 rounded-xl p-4 bg-white shadow-md transition-all hover:scale-105 duration-300"
@@ -78,10 +91,7 @@ const CustomerList = () => {
                   ✏️ Edit
                 </button>
               </Link>
-
-
             </div>
-
           ))
         )}
       </div>
