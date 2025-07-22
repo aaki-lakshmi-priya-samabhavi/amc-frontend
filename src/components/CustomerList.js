@@ -4,9 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState(''); // ✅ search state
+  const [sortOption, setSortOption] = useState('');
+
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -45,6 +48,19 @@ const CustomerList = () => {
     customer.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const sortedCustomers = [...filteredCustomers]; // Make a copy to avoid changing original
+
+if (sortOption === 'name-asc') {
+  sortedCustomers.sort((a, b) => a.name.localeCompare(b.name));
+} else if (sortOption === 'name-desc') {
+  sortedCustomers.sort((a, b) => b.name.localeCompare(a.name));
+} else if (sortOption === 'amcEndDate-asc') {
+  sortedCustomers.sort((a, b) => new Date(a.amcEndDate) - new Date(b.amcEndDate));
+} else if (sortOption === 'amcEndDate-desc') {
+  sortedCustomers.sort((a, b) => new Date(b.amcEndDate) - new Date(a.amcEndDate));
+}
+
+
   return (
     <div className="min-h-screen bg-blue-50 p-6 relative">
       <h1 className="text-5xl text-black-800 font-[Georgia] bold text-center my-10 tracking-wide font-serif">
@@ -65,12 +81,27 @@ const CustomerList = () => {
           className="border p-2 rounded w-full max-w-md"
         />
       </div>
+      <div className="flex justify-center gap-4 mb-6">
+  {/* Already have search input here */}
+  <select
+    value={sortOption}
+    onChange={(e) => setSortOption(e.target.value)}
+    className="border p-2 rounded"
+  >
+    <option value="">Sort By</option>
+    <option value="name-asc">Name A-Z</option>
+    <option value="name-desc">Name Z-A</option>
+    <option value="amcEndDate-asc">AMC End Date ↑</option>
+    <option value="amcEndDate-desc">AMC End Date ↓</option>
+  </select>
+</div>
+
 
       <div className="space-y-4 px-4">
         {filteredCustomers.length === 0 ? (
           <p className="text-center text-gray-500">No matching customers found.</p>
         ) : (
-          filteredCustomers.map((customer, index) => (
+          sortedCustomers.map((customer, index)=> (
             <div
               key={index}
               className="border-2 border-blue-300 rounded-xl p-4 bg-white shadow-md transition-all hover:scale-105 duration-300"
