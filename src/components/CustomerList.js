@@ -3,13 +3,23 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import CountdownTimer from './CountdownTimer';
+
 
 const CustomerList = () => {
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [expiryFilter, setExpiryFilter] = useState('all');
+
   const customersPerPage = 5;
+
+  const formatDate = (dateString) => {
+  const options = { day: '2-digit', month: 'short', year: 'numeric' };
+  return new Date(dateString).toLocaleDateString('en-GB', options);
+};
+
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -42,10 +52,29 @@ const CustomerList = () => {
     }
   };
 
-  const filteredCustomers = customers.filter((customer) =>
+  // ✅ Search filter
+  let filteredCustomers = customers.filter((customer) =>
     customer.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // ✅ Expiry filter
+  if (expiryFilter === '7') {
+    filteredCustomers = filteredCustomers.filter(customer => {
+      const daysLeft = (new Date(customer.amcEndDate) - new Date()) / (1000 * 60 * 60 * 24);
+      return daysLeft <= 7 && daysLeft >= 0;
+    });
+  } else if (expiryFilter === '30') {
+    filteredCustomers = filteredCustomers.filter(customer => {
+      const daysLeft = (new Date(customer.amcEndDate) - new Date()) / (1000 * 60 * 60 * 24);
+      return daysLeft <= 30 && daysLeft >= 0;
+    });
+  } else if (expiryFilter === 'expired') {
+    filteredCustomers = filteredCustomers.filter(customer =>
+      new Date(customer.amcEndDate) < new Date()
+    );
+  }
+
+  // ✅ Sorting
   const sortedCustomers = [...filteredCustomers];
   if (sortOption === 'name-asc') {
     sortedCustomers.sort((a, b) => a.name.localeCompare(b.name));
@@ -57,50 +86,58 @@ const CustomerList = () => {
     sortedCustomers.sort((a, b) => new Date(b.amcEndDate) - new Date(a.amcEndDate));
   }
 
+  // ✅ Pagination
   const indexOfLastCustomer = currentPage * customersPerPage;
   const indexOfFirstCustomer = indexOfLastCustomer - customersPerPage;
   const currentCustomers = sortedCustomers.slice(indexOfFirstCustomer, indexOfLastCustomer);
 
   return (
-    <div className="min-h-screen bg-blue-50 p-6 relative">
-      <h1 className="text-5xl text-black-800 font-[Georgia] bold text-center my-10 tracking-wide font-serif">
+    <div className="min-h-screen bg-blue-50 p-6 relative font-sans">
+      <h1 className="text-5xl font-bold text-center text-gray-800 mb-4 font-serif">
         ⭐ <span className="mx-4 font-[cursive]">AMC Scheduler</span> ⭐
       </h1>
+      <h2 className="text-2xl text-center text-black-800 mb-8 font-serif">Sri Durga Elevators</h2>
 
-      <h2 className="text-2xl text-black-800 font-[Georgia] bold text-center mb-6 font-serif">
-        Sri Durga Elevators
-      </h2>
-
-      {/* ✅ Search input */}
+      {/* Search Input */}
       <div className="flex justify-center mb-6">
         <input
           type="text"
           placeholder="Search by name"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border p-2 rounded w-full max-w-md"
+          className="border-2 border-blue-400 p-3 rounded-xl w-full max-w-md shadow-sm focus:ring-2 focus:ring-blue-300 transition-all duration-300"
         />
       </div>
 
-      {/* ✅ Sort dropdown with style */}
-      <div className="flex justify-center gap-4 mb-6">
-        <div className="relative inline-block text-left">
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="bg-white border-2 border-blue-500 text-gray-800 font-semibold px-4 py-2 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-300 ease-in-out hover:shadow-lg cursor-pointer"
-            style={{ fontFamily: 'Segoe UI, sans-serif', width: '200px' }}
-          >
-            <option value="" className="rounded-lg">Sort By</option>
-            <option value="name-asc" className="rounded-lg">Name A-Z</option>
-            <option value="name-desc" className="rounded-lg">Name Z-A</option>
-            <option value="amcEndDate-asc" className="rounded-lg">AMC End Date ↑</option>
-            <option value="amcEndDate-desc" className="rounded-lg">AMC End Date ↓</option>
-          </select>
-        </div>
+      {/* Sorting & Expiry Filters */}
+      <div className="flex justify-center gap-6 mb-6 flex-wrap">
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="bg-white border-2 border-blue-500 text-gray-800 font-semibold px-4 py-2 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out hover:shadow-lg"
+          style={{ fontFamily: 'Segoe UI, sans-serif', width: '200px' }}
+        >
+          <option value="">Sort By</option>
+          <option value="name-asc">Name A-Z</option>
+          <option value="name-desc">Name Z-A</option>
+          <option value="amcEndDate-asc">AMC End Date ↑</option>
+          <option value="amcEndDate-desc">AMC End Date ↓</option>
+        </select>
+
+        <select
+          value={expiryFilter}
+          onChange={(e) => setExpiryFilter(e.target.value)}
+          className="bg-white border-2 border-green-500 text-gray-800 font-semibold px-4 py-2 rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-200 ease-in-out hover:shadow-lg"
+          style={{ fontFamily: 'Segoe UI, sans-serif', width: '220px' }}
+        >
+          <option value="all">Filter by AMC Expiry</option>
+          <option value="7">Expiring in next 7 days</option>
+          <option value="30">Expiring in next 30 days</option>
+          <option value="expired">Already Expired</option>
+        </select>
       </div>
 
-      {/* ✅ Customer List */}
+      {/* Customer Cards */}
       <div className="space-y-4 px-4">
         {filteredCustomers.length === 0 ? (
           <p className="text-center text-gray-500">No matching customers found.</p>
@@ -112,8 +149,20 @@ const CustomerList = () => {
             >
               <p><strong className="text-blue-700">Name:</strong> {customer.name}</p>
               <p><strong className="text-blue-600">Contact:</strong> {customer.contact}</p>
-              <p><strong className="text-blue-600">AMC Start:</strong> {customer.amcStartDate}</p>
-              <p><strong className="text-blue-600">AMC End:</strong> {customer.amcEndDate}</p>
+              <p>
+  <strong className="text-blue-600">AMC Start:</strong>{' '}
+  {customer.amcStartDate ? formatDate(customer.amcStartDate) : 'N/A'}
+</p>
+<p>
+  <strong className="text-blue-600">AMC End:</strong>{' '}
+  {customer.amcEndDate ? formatDate(customer.amcEndDate) : 'N/A'}
+</p>
+
+<p>
+  <strong className="text-blue-600">Time Left:</strong>{' '}
+  <CountdownTimer endTime={customer.amcEndDate} />
+</p>
+
 
               <button
                 onClick={() => confirmDelete(customer._id)}
@@ -131,7 +180,7 @@ const CustomerList = () => {
         )}
       </div>
 
-      {/* ✅ Pagination Buttons */}
+      {/* Pagination Buttons */}
       <div className="flex justify-center mt-6 space-x-2">
         {Array.from({ length: Math.ceil(sortedCustomers.length / customersPerPage) }).map((_, i) => (
           <button
@@ -146,7 +195,7 @@ const CustomerList = () => {
         ))}
       </div>
 
-      {/* ✅ Floating Add Button */}
+      {/* Add Customer Floating Button */}
       <div className="fixed bottom-6 right-6">
         <Link
           to="/add-customer"
